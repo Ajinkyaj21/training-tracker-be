@@ -5,6 +5,22 @@ const getTechnology = async() => {
     const query = `SELECT tech_id , technology FROM technologies_master`
     return await executeQuery(query);
 }
+const getCourses = async() =>{
+    const query = `SELECT tech_id , technology , image , description FROM technologies_master`
+    return await executeQuery(query);
+}
+const getTopics = async(topic_id) =>{
+    const query = `SELECT  FROM technologies_master`
+    return await executeQuery(query);
+}
+
+const addCourses = async(technology , imageFile , description , userId) =>{
+    const query = 'INSERT INTO technologies_master(technology ,image , description , created_by , created_at) VALUES(? , ? , ? , ? , ?)'
+    const now = new Date();
+    const params = [ technology , imageFile , description ,userId ,now]
+    return executeQuery(query, params);
+}
+
 // My training part for dashboard page
 const getMyTrainingQuery = async(userId) => {
     const query = `WITH cte AS ( SELECT  t.technology,
@@ -40,4 +56,4 @@ const traineesDashboardQuery = (params) => {
     return executeQuery(query, params);
 }
 
-module.exports = { getTechnology, getMyTrainingQuery, traineesDashboardQuery};
+module.exports = { getTechnology, getMyTrainingQuery, traineesDashboardQuery , getCourses , addCourses};

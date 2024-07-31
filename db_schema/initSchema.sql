@@ -99,3 +99,15 @@ CREATE TABLE IF NOT EXISTS comments (
     FOREIGN KEY (training_plan_id) REFERENCES training_plan(training_plan_id),
     FOREIGN KEY (added_by) REFERENCES users (user_id)
 );
+
+ALTER TABLE technologies_master 
+ADD COLUMN image BLOB AFTER technology;
+
+ALTER TABLE technologies_master 
+ADD COLUMN description TEXT AFTER image;
+
+ALTER TABLE technologies_master 
+ADD COLUMN created_by INT NOT NULL AFTER description;
+
+ALTER TABLE technologies_master 
+ADD CONSTRAINT fk_created_by FOREIGN KEY (created_by) REFERENCES users(user_id);

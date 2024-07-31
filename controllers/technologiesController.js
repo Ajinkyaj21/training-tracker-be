@@ -1,6 +1,5 @@
-const {getTechnology, getMyTrainingQuery, traineesDashboardQuery, completionPercentageQuery} = require('../models/technologiesModel');
+const {getTechnology, getMyTrainingQuery, traineesDashboardQuery, completionPercentageQuery, getCourses, addCourses} = require('../models/technologiesModel');
 const { sendSuccessRes, sendFailRes} = require('../utils/responses');
-
 // 4 .Get Technology Dropdown - Admin Page
 const getTechnologyCtrl = async(_, res) => {
     try {
@@ -12,6 +11,44 @@ const getTechnologyCtrl = async(_, res) => {
     } catch (error) {
         console.error("Error in get technology Ctrl..:", error);
         return sendFailRes(res, { message: "Internal Server Error" });
+    }
+}
+const getCoursesCtrl = async(_, res) => {
+    try {
+        const results = await getCourses();
+        if (!results.error) {
+            return sendSuccessRes(res, {result: results});
+        }
+        return sendFailRes(res, { message: results.errorMessage });
+    } catch (error) {
+        console.error("Error in get technology Ctrl..:", error);
+        return sendFailRes(res, { message: "Internal Server Error" });
+    }
+}
+const getTopicsCtrl =  async(_, res) => {
+try {
+    const results = await getTopics();
+    if (!results.error) {
+        return sendSuccessRes(res, {result: results});
+    }
+    return sendFailRes(res, { message: results.errorMessage });
+} catch (error) {
+    console.error("Error in get technology Ctrl..:", error);
+    return sendFailRes(res, { message: "Internal Server Error" });
+}
+}
+
+const addCoursesCtrl = async(req , res)=>{
+    try {
+    let { technology ,image ,description, is_admin: isAdmin } = req.body;   
+    if (!(technology && image && description)) {
+        return sendFailRes(res, { message: "All fields are necessary..." } );
+    }
+        const results = await addCourses(technology , image , description , userId);
+        return sendSuccessRes(res, {result: `Course added successfully`});
+    } catch (error) {
+        console.error(error);
+        return sendFailRes(res, { message: "Unable to insert courses" }, 500);
     }
 }
 
@@ -90,4 +127,4 @@ const completionPercentageCtrl = async(req, res) => {
 }
 
 
-module.exports = { getTechnologyCtrl, getMyTrainingCtrl, traineesDashboardCtrl, completionPercentageCtrl};
+module.exports = { getTechnologyCtrl, getMyTrainingCtrl, traineesDashboardCtrl, completionPercentageCtrl , getCoursesCtrl ,addCoursesCtrl , getTopicsCtrl};
