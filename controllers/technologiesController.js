@@ -40,6 +40,8 @@ try {
 
 const addCoursesCtrl = async(req , res)=>{
     try {
+    const userId = req.user.user_id;
+    console.log("The user id is --> ",userId);
     let { technology ,image ,description, is_admin: isAdmin } = req.body;   
     if (!(technology && image && description)) {
         return sendFailRes(res, { message: "All fields are necessary..." } );
