@@ -28,6 +28,37 @@ const addTopics = async(topic , article , youtube , practice , assignments , tec
     const params = [topic , article , youtube , practice , assignments , now , tech_id];
     return executeQuery(query , params)
 }
+const editTopics = async(topic, article, youtube, practice, assignments, tech_id, tech_topic_id) => {
+    let query = `UPDATE tech_topics_master SET `;
+    const params = [];
+    if (topic) {
+        query += `topic = ?, `;
+        params.push(topic);
+    }
+    if (article) {
+        query += `Article = ?, `;
+        params.push(article);
+    }
+    if (youtube) {
+        query += `Youtube = ?, `;
+        params.push(youtube);
+    }
+    if (practice) {
+        query += `Practice = ?, `;
+        params.push(practice);
+    }
+    if (assignments) {
+        query += `Assignments = ?, `;
+        params.push(assignments);
+    }
+    query = query.slice(0, -2);
+
+    query += `, created_at = ? WHERE tech_id = ? AND tech_topic_id = ?`;
+    const now = new Date();
+    params.push(now, tech_id, tech_topic_id);
+    return executeQuery(query, params);
+};
+
 
 // My training part for dashboard page
 const getMyTrainingQuery = async(userId) => {
@@ -64,4 +95,4 @@ const traineesDashboardQuery = (params) => {
     return executeQuery(query, params);
 }
 
-module.exports = { getTechnology, getMyTrainingQuery, traineesDashboardQuery , getCourses , addCourses , getTopics , addTopics};
+module.exports = { getTechnology, getMyTrainingQuery, traineesDashboardQuery , getCourses , addCourses , getTopics , addTopics , editTopics};

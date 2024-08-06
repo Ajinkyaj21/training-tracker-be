@@ -1,4 +1,4 @@
-const {getTechnology, getMyTrainingQuery, traineesDashboardQuery, completionPercentageQuery, getCourses, addCourses , getTopics , addTopics} = require('../models/technologiesModel');
+const {getTechnology, getMyTrainingQuery, traineesDashboardQuery, completionPercentageQuery, getCourses, addCourses , getTopics , addTopics , editTopics} = require('../models/technologiesModel');
 const { sendSuccessRes, sendFailRes} = require('../utils/responses');
 // 4 .Get Technology Dropdown - Admin Page
 const getTechnologyCtrl = async(_, res) => {
@@ -84,6 +84,23 @@ const addTopicsCtrl = async(req , res)=>{
         return sendFailRes(res, { message: "Unable to insert topics" }, 500);
     }
 }
+const editTopicCtrl = async (req, res) => {
+    const tech_id = req.params.tech_id;
+    const { topic, article, youtube, practice, assignments, tech_topic_id } = req.body;
+    try {
+        if (!tech_id || !tech_topic_id) {
+            return sendFailRes(res, { message: "tech_id and tech_topic_id are necessary" });
+        }
+        if (!(topic || article || youtube || practice || assignments)) {
+            return sendFailRes(res, { message: "At least one field to update must be provided..." });
+        }
+        const results = await editTopics(topic, article, youtube, practice, assignments, tech_id, tech_topic_id);
+        return sendSuccessRes(res, { result: `Topic updated successfully` });
+    } catch (error) {
+        console.error(error);
+        return sendFailRes(res, { message: "Unable to update topics" }, 500);
+    }
+};
 // Boxes with percentage for each box(eg.subject , all etc)
 const getMyTrainingCtrl = async (req, res) => {
     try {
@@ -159,4 +176,4 @@ const completionPercentageCtrl = async(req, res) => {
 }
 
 
-module.exports = { getTechnologyCtrl, getMyTrainingCtrl, traineesDashboardCtrl, completionPercentageCtrl , getCoursesCtrl ,addCoursesCtrl , getTopicsCtrl , addTopicsCtrl , addTopicsCtrl};
+module.exports = { getTechnologyCtrl, getMyTrainingCtrl, traineesDashboardCtrl, completionPercentageCtrl , getCoursesCtrl ,addCoursesCtrl , getTopicsCtrl , addTopicsCtrl , addTopicsCtrl, editTopicCtrl};
