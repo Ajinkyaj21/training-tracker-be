@@ -22,6 +22,12 @@ const addCourses = async(technology , imageFile , description , userId) =>{
     const params = [ technology , imageFile , description ,userId ,now]
     return executeQuery(query, params);
 }
+const addTopics = async(topic , article , youtube , practice , assignments , tech_id)=>{
+    const query = 'INSERT INTO tech_topics_master(topic , Article , Youtube , Practice , Assignments , created_at , tech_id) VALUES(? , ? , ? , ? , ? , ? , ?)';
+    const now = new Date();
+    const params = [topic , article , youtube , practice , assignments , now , tech_id];
+    return executeQuery(query , params)
+}
 
 // My training part for dashboard page
 const getMyTrainingQuery = async(userId) => {
@@ -58,4 +64,4 @@ const traineesDashboardQuery = (params) => {
     return executeQuery(query, params);
 }
 
-module.exports = { getTechnology, getMyTrainingQuery, traineesDashboardQuery , getCourses , addCourses , getTopics};
+module.exports = { getTechnology, getMyTrainingQuery, traineesDashboardQuery , getCourses , addCourses , getTopics , addTopics};

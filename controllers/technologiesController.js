@@ -1,4 +1,4 @@
-const {getTechnology, getMyTrainingQuery, traineesDashboardQuery, completionPercentageQuery, getCourses, addCourses , getTopics} = require('../models/technologiesModel');
+const {getTechnology, getMyTrainingQuery, traineesDashboardQuery, completionPercentageQuery, getCourses, addCourses , getTopics , addTopics} = require('../models/technologiesModel');
 const { sendSuccessRes, sendFailRes} = require('../utils/responses');
 // 4 .Get Technology Dropdown - Admin Page
 const getTechnologyCtrl = async(_, res) => {
@@ -62,14 +62,28 @@ const addCoursesCtrl = async(req , res)=>{
     if (!(technology && image && description)) {
         return sendFailRes(res, { message: "All fields are necessary..." } );
     }
-        const results = await addCourses(technology , image , description , userId);
-        return sendSuccessRes(res, {result: `Course added successfully`});
+    const results = await addCourses(technology , image , description , userId);
+    return sendSuccessRes(res, {result: `Course added successfully`});
     } catch (error) {
         console.error(error);
         return sendFailRes(res, { message: "Unable to insert courses" }, 500);
     }
 }
 
+const addTopicsCtrl = async(req , res)=>{
+    const tech_id = req.params.tech_id;
+    const {topic , article , youtube , practice , assignments } = req.body;
+    try{
+    if(!(topic && article && youtube && practice && assignments && tech_id)){
+        return sendFailRes(res, { message: "All fields are necessary..." } );
+    }
+    const results = await addTopics(topic , article , youtube , practice , assignments , tech_id);
+    return sendSuccessRes(res, {result: `Topic added successfully`});
+    } catch (error) {
+        console.error(error);
+        return sendFailRes(res, { message: "Unable to insert topics" }, 500);
+    }
+}
 // Boxes with percentage for each box(eg.subject , all etc)
 const getMyTrainingCtrl = async (req, res) => {
     try {
@@ -145,4 +159,4 @@ const completionPercentageCtrl = async(req, res) => {
 }
 
 
-module.exports = { getTechnologyCtrl, getMyTrainingCtrl, traineesDashboardCtrl, completionPercentageCtrl , getCoursesCtrl ,addCoursesCtrl , getTopicsCtrl};
+module.exports = { getTechnologyCtrl, getMyTrainingCtrl, traineesDashboardCtrl, completionPercentageCtrl , getCoursesCtrl ,addCoursesCtrl , getTopicsCtrl , addTopicsCtrl , addTopicsCtrl};
