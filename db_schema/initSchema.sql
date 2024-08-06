@@ -111,3 +111,15 @@ ADD COLUMN created_by INT NOT NULL AFTER description;
 
 ALTER TABLE technologies_master 
 ADD CONSTRAINT fk_created_by FOREIGN KEY (created_by) REFERENCES users(user_id);
+
+ALTER TABLE tech_topics_master
+ADD COLUMN Article TEXT AFTER topic;
+
+ALTER TABLE tech_topics_master
+ADD COLUMN Youtube TEXT AFTER Article;
+
+ALTER TABLE tech_topics_master
+ADD COLUMN Practice TEXT AFTER Youtube;
+
+ALTER TABLE tech_topics_master
+ADD COLUMN Assignments TEXT AFTER Practice;

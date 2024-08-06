@@ -1,4 +1,4 @@
-const {getTechnology, getMyTrainingQuery, traineesDashboardQuery, completionPercentageQuery, getCourses, addCourses} = require('../models/technologiesModel');
+const {getTechnology, getMyTrainingQuery, traineesDashboardQuery, completionPercentageQuery, getCourses, addCourses , getTopics} = require('../models/technologiesModel');
 const { sendSuccessRes, sendFailRes} = require('../utils/responses');
 // 4 .Get Technology Dropdown - Admin Page
 const getTechnologyCtrl = async(_, res) => {
@@ -16,18 +16,34 @@ const getTechnologyCtrl = async(_, res) => {
 const getCoursesCtrl = async(_, res) => {
     try {
         const results = await getCourses();
+
         if (!results.error) {
-            return sendSuccessRes(res, {result: results});
+            const processedResults = results.map(course => {
+                if (course.image && Buffer.isBuffer(course.image)) {
+                    const base64Image = course.image.toString('base64');
+                    const mimeType = 'image/jpeg'; 
+                    return {
+                        ...course,
+                        image: `${base64Image}`
+                    };
+                }
+                return course;
+            });
+
+            return sendSuccessRes(res, { result: processedResults });
         }
+
         return sendFailRes(res, { message: results.errorMessage });
     } catch (error) {
-        console.error("Error in get technology Ctrl..:", error);
+        console.error("Error in getCoursesCtrl:", error);
         return sendFailRes(res, { message: "Internal Server Error" });
     }
-}
-const getTopicsCtrl =  async(_, res) => {
+};
+
+const getTopicsCtrl =  async(req, res) => {
 try {
-    const results = await getTopics();
+    const topic_id = req.params.topic_id;
+    const results = await getTopics(topic_id);
     if (!results.error) {
         return sendSuccessRes(res, {result: results});
     }

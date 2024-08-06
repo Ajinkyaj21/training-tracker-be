@@ -1,5 +1,5 @@
 const express = require("express");
-const {getTechnologyCtrl, getMyTrainingCtrl, traineesDashboardCtrl, getCoursesCtrl, addCoursesCtrl } = require("../controllers/technologiesController");
+const {getTechnologyCtrl, getMyTrainingCtrl, traineesDashboardCtrl, getCoursesCtrl, addCoursesCtrl , getTopicsCtrl} = require("../controllers/technologiesController");
 const technologyRouter = express.Router();
 const { adminAuthMiddleware } = require("../middlewares/adminMiddleware");
 const { userAuthMiddleware } = require("../middlewares/userMiddleware");
@@ -8,6 +8,8 @@ const { userAuthMiddleware } = require("../middlewares/userMiddleware");
 technologyRouter.get('/', adminAuthMiddleware, getTechnologyCtrl);
 
 technologyRouter.get('/getCourses', getCoursesCtrl);
+
+technologyRouter.get('/getTopics/:topic_id', getTopicsCtrl);
 
 technologyRouter.post('/addNewCourse',adminAuthMiddleware , addCoursesCtrl);
 

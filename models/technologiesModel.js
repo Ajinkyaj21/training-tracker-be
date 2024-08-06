@@ -10,8 +10,10 @@ const getCourses = async() =>{
     return await executeQuery(query);
 }
 const getTopics = async(topic_id) =>{
-    const query = `SELECT  FROM technologies_master`
-    return await executeQuery(query);
+    const query = `SELECT tech_topic_id , tech_id , topic , Article , Youtube , Practice , Assignments  FROM tech_topics_master 
+    WHERE  tech_id = ?`
+    const params = [topic_id]
+    return await executeQuery(query , params);
 }
 
 const addCourses = async(technology , imageFile , description , userId) =>{
@@ -56,4 +58,4 @@ const traineesDashboardQuery = (params) => {
     return executeQuery(query, params);
 }
 
-module.exports = { getTechnology, getMyTrainingQuery, traineesDashboardQuery , getCourses , addCourses};
+module.exports = { getTechnology, getMyTrainingQuery, traineesDashboardQuery , getCourses , addCourses , getTopics};
