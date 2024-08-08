@@ -21,10 +21,10 @@ const getCoursesCtrl = async(_, res) => {
             const processedResults = results.map(course => {
                 if (course.image && Buffer.isBuffer(course.image)) {
                     const base64Image = course.image.toString('base64');
-                    const mimeType = 'image/jpeg'; 
+                    const mimeType = 'data:image/svg+xml;base64'; 
                     return {
                         ...course,
-                        image: `${base64Image}`
+                        image: `${mimeType}${base64Image}`
                     };
                 }
                 return course;
