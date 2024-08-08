@@ -1,4 +1,4 @@
-const {getTechnology, getMyTrainingQuery, traineesDashboardQuery, completionPercentageQuery, getCourses, addCourses , getTopics , addTopics , editTopics} = require('../models/technologiesModel');
+const {getTechnology, getMyTrainingQuery, traineesDashboardQuery, completionPercentageQuery, getCourses, addCourses , getTopics , addTopics , editTopics , topicExists ,courseExists} = require('../models/technologiesModel');
 const { sendSuccessRes, sendFailRes} = require('../utils/responses');
 // 4 .Get Technology Dropdown - Admin Page
 const getTechnologyCtrl = async(_, res) => {
@@ -19,14 +19,14 @@ const getCoursesCtrl = async(_, res) => {
 
         if (!results.error) {
             const processedResults = results.map(course => {
-                if (course.image && Buffer.isBuffer(course.image)) {
-                    const base64Image = course.image.toString('base64');
-                    const mimeType = 'data:image/svg+xml;base64'; 
-                    return {
-                        ...course,
-                        image: `${mimeType}${base64Image}`
-                    };
-                }
+                // if (course.image && Buffer.isBuffer(course.image)) {
+                //     const base64Image = course.image.toString('base64');
+                //     const mimeType = 'data:image/svg+xml;base64'; 
+                //     return {
+                //         ...course,
+                //         image: `${base64Image}`
+                //     };
+                // }
                 return course;
             });
 
@@ -62,6 +62,10 @@ const addCoursesCtrl = async(req , res)=>{
     if (!(technology && image && description)) {
         return sendFailRes(res, { message: "All fields are necessary..." } );
     }
+    const courseExistsCtrl = await courseExists(technology);
+    if(courseExistsCtrl.length > 0){
+        return sendFailRes(res, { message: "Course already exists" }, 500);
+    }
     const results = await addCourses(technology , image , description , userId);
     return sendSuccessRes(res, {result: `Course added successfully`});
     } catch (error) {
@@ -74,8 +78,12 @@ const addTopicsCtrl = async(req , res)=>{
     const tech_id = req.params.tech_id;
     const {topic , article , youtube , practice , assignments } = req.body;
     try{
-    if(!(topic && article && youtube && practice && assignments && tech_id)){
+    if(!(topic && tech_id)){
         return sendFailRes(res, { message: "All fields are necessary..." } );
+    }
+    const topicExistsCtrl = await topicExists(topic);
+    if(topicExistsCtrl.length > 0){
+        return sendFailRes(res, { message: "Topic already exists" }, 500);
     }
     const results = await addTopics(topic , article , youtube , practice , assignments , tech_id);
     return sendSuccessRes(res, {result: `Topic added successfully`});
@@ -93,6 +101,10 @@ const editTopicCtrl = async (req, res) => {
         }
         if (!(topic || article || youtube || practice || assignments)) {
             return sendFailRes(res, { message: "At least one field to update must be provided..." });
+        }
+        const topicExistsCtrl = await topicExists(topic);
+        if(topicExistsCtrl.length > 0){
+        return sendFailRes(res, { message: "Topic already exists" }, 500);
         }
         const results = await editTopics(topic, article, youtube, practice, assignments, tech_id, tech_topic_id);
         return sendSuccessRes(res, { result: `Topic updated successfully` });

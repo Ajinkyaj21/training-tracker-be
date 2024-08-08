@@ -6,11 +6,11 @@ const getTechnology = async() => {
     return await executeQuery(query);
 }
 const getCourses = async() =>{
-    const query = `SELECT tech_id , technology , image , description , created_at FROM technologies_master`
+    const query = `SELECT tech_id , technology , image , description , DATE(created_at) AS created_at FROM technologies_master`
     return await executeQuery(query);
 }
 const getTopics = async(topic_id) =>{
-    const query = `SELECT tech_topic_id , tech_id , topic , Article , Youtube , Practice , Assignments , created_at FROM tech_topics_master 
+    const query = `SELECT tech_topic_id , tech_id , topic , Article , Youtube , Practice , Assignments , DATE(created_at) AS created_at  FROM tech_topics_master 
     WHERE  tech_id = ?`
     const params = [topic_id]
     return await executeQuery(query , params);
@@ -28,6 +28,19 @@ const addTopics = async(topic , article , youtube , practice , assignments , tec
     const params = [topic , article , youtube , practice , assignments , now , tech_id];
     return executeQuery(query , params)
 }
+
+const topicExists = async(topic)=>{
+    const query = 'SELECT * FROM tech_topics_master WHERE topic = ?'
+    const params = [topic];
+    return executeQuery(query , params);
+} 
+
+const courseExists = async(technology)=>{
+    const query = 'SELECT * FROM technologies_master WHERE technology = ?'
+    const params = [technology];
+    return executeQuery(query , params);
+}
+
 const editTopics = async(topic, article, youtube, practice, assignments, tech_id, tech_topic_id) => {
     let query = `UPDATE tech_topics_master SET `;
     const params = [];
@@ -95,4 +108,4 @@ const traineesDashboardQuery = (params) => {
     return executeQuery(query, params);
 }
 
-module.exports = { getTechnology, getMyTrainingQuery, traineesDashboardQuery , getCourses , addCourses , getTopics , addTopics , editTopics};
+module.exports = { getTechnology, getMyTrainingQuery, traineesDashboardQuery , getCourses , addCourses , getTopics , addTopics , editTopics, topicExists , courseExists};
