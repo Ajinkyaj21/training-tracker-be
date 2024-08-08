@@ -6,11 +6,11 @@ const getTechnology = async() => {
     return await executeQuery(query);
 }
 const getCourses = async() =>{
-    const query = `SELECT tech_id , technology , image , description FROM technologies_master`
+    const query = `SELECT tech_id , technology , image , description , created_at FROM technologies_master`
     return await executeQuery(query);
 }
 const getTopics = async(topic_id) =>{
-    const query = `SELECT tech_topic_id , tech_id , topic , Article , Youtube , Practice , Assignments  FROM tech_topics_master 
+    const query = `SELECT tech_topic_id , tech_id , topic , Article , Youtube , Practice , Assignments , created_at FROM tech_topics_master 
     WHERE  tech_id = ?`
     const params = [topic_id]
     return await executeQuery(query , params);
