@@ -123,3 +123,26 @@ ADD COLUMN Practice TEXT AFTER Youtube;
 
 ALTER TABLE tech_topics_master
 ADD COLUMN Assignments TEXT AFTER Practice;
+
+
+CREATE TABLE courses (
+    course_id INT PRIMARY KEY AUTO_INCREMENT,
+    course VARCHAR(255) NOT NULL,
+    image VARCHAR(255),
+    description TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    user_id INT,
+    FOREIGN KEY (user_id) REFERENCES users(user_id)
+);
+
+CREATE TABLE topics (
+    topic_id INT PRIMARY KEY AUTO_INCREMENT,
+    topic VARCHAR(255) NOT NULL,
+    article TEXT,
+    youtube VARCHAR(255),
+    practice TEXT,
+    assignments TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    course_id INT,
+    FOREIGN KEY (course_id) REFERENCES courses(course_id)
+);

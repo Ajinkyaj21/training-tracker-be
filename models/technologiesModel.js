@@ -6,43 +6,43 @@ const getTechnology = async() => {
     return await executeQuery(query);
 }
 const getCourses = async() =>{
-    const query = `SELECT tech_id , technology , image , description , DATE(created_at) AS created_at FROM technologies_master`
+    const query = `SELECT course_id , course , image , description , DATE(created_at) AS created_at FROM courses`
     return await executeQuery(query);
 }
 const getTopics = async(topic_id) =>{
-    const query = `SELECT tech_topic_id , tech_id , topic , Article , Youtube , Practice , Assignments , DATE(created_at) AS created_at  FROM tech_topics_master 
-    WHERE  tech_id = ?`
+    const query = `SELECT topic_id , topic , article , youtube , practice , assignments , DATE(created_at) AS created_at FROM topics 
+    WHERE  course_id = ?`
     const params = [topic_id]
     return await executeQuery(query , params);
 }
 
 const addCourses = async(technology , imageFile , description , userId) =>{
-    const query = 'INSERT INTO technologies_master(technology ,image , description , created_by , created_at) VALUES(? , ? , ? , ? , ?)'
+    const query = 'INSERT INTO courses(course ,image , description , user_id , created_at) VALUES(? , ? , ? , ? , ?)'
     const now = new Date();
     const params = [ technology , imageFile , description ,userId ,now]
     return executeQuery(query, params);
 }
 const addTopics = async(topic , article , youtube , practice , assignments , tech_id)=>{
-    const query = 'INSERT INTO tech_topics_master(topic , Article , Youtube , Practice , Assignments , created_at , tech_id) VALUES(? , ? , ? , ? , ? , ? , ?)';
+    const query = 'INSERT INTO topics(topic , article , youtube , practice , assignments , created_at , course_id) VALUES(? , ? , ? , ? , ? , ? , ?)';
     const now = new Date();
     const params = [topic , article , youtube , practice , assignments , now , tech_id];
     return executeQuery(query , params)
 }
 
 const topicExists = async(topic)=>{
-    const query = 'SELECT * FROM tech_topics_master WHERE topic = ?'
+    const query = 'SELECT * FROM topics WHERE topic = ?'
     const params = [topic];
     return executeQuery(query , params);
 } 
 
 const courseExists = async(technology)=>{
-    const query = 'SELECT * FROM technologies_master WHERE technology = ?'
+    const query = 'SELECT * FROM courses WHERE course = ?'
     const params = [technology];
     return executeQuery(query , params);
 }
 
 const editTopics = async(topic, article, youtube, practice, assignments, tech_id, tech_topic_id) => {
-    let query = `UPDATE tech_topics_master SET `;
+    let query = `UPDATE topics SET `;
     const params = [];
     if (topic) {
         query += `topic = ?, `;
@@ -66,7 +66,7 @@ const editTopics = async(topic, article, youtube, practice, assignments, tech_id
     }
     query = query.slice(0, -2);
 
-    query += `, created_at = ? WHERE tech_id = ? AND tech_topic_id = ?`;
+    query += `, created_at = ? WHERE course_id = ? AND topic_id = ?`;
     const now = new Date();
     params.push(now, tech_id, tech_topic_id);
     return executeQuery(query, params);
