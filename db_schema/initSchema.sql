@@ -146,3 +146,6 @@ CREATE TABLE topics (
     course_id INT,
     FOREIGN KEY (course_id) REFERENCES courses(course_id)
 );
+
+ALTER TABLE topics
+ADD COLUMN status TEXT AFTER assignments;

@@ -10,7 +10,7 @@ const getCourses = async() =>{
     return await executeQuery(query);
 }
 const getTopics = async(topic_id) =>{
-    const query = `SELECT topic_id , topic , article , youtube , practice , assignments , DATE(created_at) AS created_at FROM topics 
+    const query = `SELECT topic_id , topic , article , youtube , practice , assignments , status, DATE(created_at) AS created_at FROM topics 
     WHERE  course_id = ?`
     const params = [topic_id]
     return await executeQuery(query , params);
