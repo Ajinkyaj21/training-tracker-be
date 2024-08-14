@@ -16,7 +16,6 @@ const getTechnologyCtrl = async(_, res) => {
 const getCoursesCtrl = async(_, res) => {
     try {
         const results = await getCourses();
-
         if (!results.error) {
             const processedResults = results.map(course => {
                 // if (course.image && Buffer.isBuffer(course.image)) {
