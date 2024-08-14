@@ -72,6 +72,12 @@ const editTopics = async(topic, article, youtube, practice, assignments, tech_id
     return executeQuery(query, params);
 };
 
+const setStatus = async(topic_id ,status)=>{
+    const query = `UPDATE topics SET status = ? 
+    WHERE topic_id = ?`
+    const params = [status ,topic_id];
+    return executeQuery(query , params);  
+}
 
 // My training part for dashboard page
 const getMyTrainingQuery = async(userId) => {
@@ -108,4 +114,4 @@ const traineesDashboardQuery = (params) => {
     return executeQuery(query, params);
 }
 
-module.exports = { getTechnology, getMyTrainingQuery, traineesDashboardQuery , getCourses , addCourses , getTopics , addTopics , editTopics, topicExists , courseExists};
+module.exports = { getTechnology, getMyTrainingQuery, traineesDashboardQuery , getCourses , addCourses , getTopics , addTopics , editTopics, topicExists , courseExists , setStatus};

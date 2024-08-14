@@ -1,4 +1,4 @@
-const {getTechnology, getMyTrainingQuery, traineesDashboardQuery, completionPercentageQuery, getCourses, addCourses , getTopics , addTopics , editTopics , topicExists ,courseExists} = require('../models/technologiesModel');
+const {getTechnology, getMyTrainingQuery, traineesDashboardQuery, completionPercentageQuery, getCourses, addCourses , getTopics , addTopics , editTopics , topicExists ,courseExists,setStatus} = require('../models/technologiesModel');
 const { sendSuccessRes, sendFailRes} = require('../utils/responses');
 // 4 .Get Technology Dropdown - Admin Page
 const getTechnologyCtrl = async(_, res) => {
@@ -90,6 +90,19 @@ const addTopicsCtrl = async(req , res)=>{
     } catch (error) {
         console.error(error);
         return sendFailRes(res, { message: "Unable to insert topics" }, 500);
+    }
+}
+
+const setStatusCtrl = async(req , res)=>{
+    try {
+        const topic_id = req.params.topic_id;
+        const {status} = req.body;
+
+        const results = await setStatus(topic_id , status);
+        return sendSuccessRes(res, {result: results});
+    } catch (error) {
+        console.error(error);
+        return sendFailRes(res, { message: "Unable to update topics" }, 500);
     }
 }
 const editTopicCtrl = async (req, res) => {
@@ -188,4 +201,4 @@ const completionPercentageCtrl = async(req, res) => {
 }
 
 
-module.exports = { getTechnologyCtrl, getMyTrainingCtrl, traineesDashboardCtrl, completionPercentageCtrl , getCoursesCtrl ,addCoursesCtrl , getTopicsCtrl , addTopicsCtrl , addTopicsCtrl, editTopicCtrl};
+module.exports = { getTechnologyCtrl, getMyTrainingCtrl, traineesDashboardCtrl, completionPercentageCtrl , getCoursesCtrl ,addCoursesCtrl , getTopicsCtrl , addTopicsCtrl , addTopicsCtrl, editTopicCtrl , setStatusCtrl};

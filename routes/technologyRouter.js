@@ -1,5 +1,5 @@
 const express = require("express");
-const {getTechnologyCtrl, getMyTrainingCtrl, traineesDashboardCtrl, getCoursesCtrl, addCoursesCtrl , getTopicsCtrl, addTopicsCtrl , editTopicCtrl} = require("../controllers/technologiesController");
+const {getTechnologyCtrl, getMyTrainingCtrl, traineesDashboardCtrl, getCoursesCtrl, addCoursesCtrl , getTopicsCtrl, addTopicsCtrl , editTopicCtrl, setStatusCtrl} = require("../controllers/technologiesController");
 const technologyRouter = express.Router();
 const { adminAuthMiddleware } = require("../middlewares/adminMiddleware");
 const { userAuthMiddleware } = require("../middlewares/userMiddleware");
@@ -16,6 +16,8 @@ technologyRouter.post('/addNewCourse',adminAuthMiddleware , addCoursesCtrl);
 technologyRouter.post('/addNewTopic/:tech_id',adminAuthMiddleware , addTopicsCtrl);
 
 technologyRouter.put('/editTopic/:tech_id', adminAuthMiddleware, editTopicCtrl);
+
+technologyRouter.put('/updateStatus/:topic_id', setStatusCtrl);
 
 // My training part for dashboard page
 technologyRouter.get('/myTraining', userAuthMiddleware, getMyTrainingCtrl);
