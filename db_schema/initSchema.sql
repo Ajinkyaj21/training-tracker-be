@@ -128,7 +128,7 @@ ADD COLUMN Assignments TEXT AFTER Practice;
 CREATE TABLE courses (
     course_id INT PRIMARY KEY AUTO_INCREMENT,
     course VARCHAR(255) NOT NULL,
-    image longblob,
+    image longtext,
     description TEXT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     user_id INT,
@@ -138,10 +138,10 @@ CREATE TABLE courses (
 CREATE TABLE topics (
     topic_id INT PRIMARY KEY AUTO_INCREMENT,
     topic VARCHAR(255) NOT NULL,
-    article TEXT,
+    article longtext,
     youtube VARCHAR(255),
-    practice TEXT,
-    assignments TEXT,
+    practice longtext,
+    assignments longtext,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     course_id INT,
     FOREIGN KEY (course_id) REFERENCES courses(course_id)

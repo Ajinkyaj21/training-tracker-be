@@ -43,6 +43,7 @@ const getTopicsCtrl =  async(req, res) => {
 try {
     const topic_id = req.params.topic_id;
     const results = await getTopics(topic_id);
+    console.log("The results are ---> ",results);
     if (!results.error) {
         return sendSuccessRes(res, {result: results});
     }
