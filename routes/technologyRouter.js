@@ -1,5 +1,5 @@
 const express = require("express");
-const {getTechnologyCtrl, getMyTrainingCtrl, traineesDashboardCtrl, getCoursesCtrl, addCoursesCtrl , getTopicsCtrl, addTopicsCtrl , editTopicCtrl, setStatusCtrl} = require("../controllers/technologiesController");
+const {getTechnologyCtrl, getMyTrainingCtrl, traineesDashboardCtrl, getCoursesCtrl, addCoursesCtrl , getTopicsCtrl, addTopicsCtrl , editTopicCtrl, setStatusCtrl ,uploadCtrl} = require("../controllers/technologiesController");
 
 
 const technologyRouter = express.Router();
@@ -36,9 +36,11 @@ technologyRouter.post('/addNewTopic/:tech_id', adminAuthMiddleware, upload.field
 
 technologyRouter.put('/editTopic/:tech_id', adminAuthMiddleware,upload.fields([
     { name: 'article', maxCount: 1 },
-    { name: 'practice', maxCount: 1 },
-    { name: 'assignments', maxCount: 1 }]), editTopicCtrl);
-    
+    { name: 'practice', maxCount: 1 }]), editTopicCtrl);
+
+technologyRouter.put('/uploadAssignment/:tech_id',upload.fields([
+    { name: 'assignments', maxCount: 1 }]), uploadCtrl);
+
 technologyRouter.put('/updateStatus/:topic_id', setStatusCtrl);
 
 // My training part for dashboard page

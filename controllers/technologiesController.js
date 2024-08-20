@@ -169,10 +169,6 @@ const addTopicsCtrl = async (req, res) => {
     }
 };
 
-
-
-
-
 const setStatusCtrl = async(req , res)=>{
     try {
         const topic_id = req.params.topic_id;
@@ -189,7 +185,6 @@ const editTopicCtrl = async (req, res) => {
     const tech_id = req.params.tech_id;
     const { topic, youtube, assignments, tech_topic_id } = req.body;
     const { article, practice } = req.files || {}; 
-    console.log("The data is ---> ",req.files)
     try {
         if (!tech_id || !tech_topic_id) {
             return sendFailRes(res, { message: "tech_id and tech_topic_id are necessary" });
@@ -239,6 +234,39 @@ const editTopicCtrl = async (req, res) => {
     } catch (error) {
         console.error('Error in editTopicCtrl:', error);
         return sendFailRes(res, { message: "Unable to update topics" }, 500);
+    }
+};
+const uploadCtrl = async (req, res) => {
+    const tech_id = req.params.tech_id;
+    const {  topic, youtube, tech_topic_id , articleUrl , practiceUrl} = req.body;
+    const { assignments  } = req.files || {}; 
+    try {
+        if (!tech_id || !tech_topic_id) {
+            return sendFailRes(res, { message: "tech_id and tech_topic_id are necessary" });
+        }
+        const containerClient = blobServiceClient.getContainerClient(process.env.AZURE_STORAGE_CONTAINER_NAME);
+
+        let assignmentsUrl = null;
+        // Upload article if present
+        if (assignments && assignments[0]) {
+            const articlePath = assignments[0].path;
+            const articleBlobName = assignments[0].filename;
+            const articleBlockBlobClient = containerClient.getBlockBlobClient(articleBlobName);
+
+            await articleBlockBlobClient.uploadFile(articlePath);
+            fs.unlinkSync(articlePath);
+
+            assignmentsUrl = `https://${process.env.AZURE_STORAGE_ACCOUNT_NAME}.blob.core.windows.net/${process.env.AZURE_STORAGE_CONTAINER_NAME}/${articleBlobName}`;
+        } else if (req.body.assignment) { 
+            assignmentsUrl = req.body.assignment;
+        }
+        const results = await editTopics(topic, articleUrl, youtube, practiceUrl, assignmentsUrl, tech_id, tech_topic_id);
+
+        console.log("Topic updated successfully: ", results);
+        return sendSuccessRes(res, { result: `Assignment uploaded successfully` });
+    } catch (error) {
+        console.error('Error in editTopicCtrl:', error);
+        return sendFailRes(res, { message: "Unable to upload assignment" }, 500);
     }
 };
 
@@ -317,4 +345,4 @@ const completionPercentageCtrl = async(req, res) => {
 }
 
 
-module.exports = { getTechnologyCtrl, getMyTrainingCtrl, traineesDashboardCtrl, completionPercentageCtrl , getCoursesCtrl ,addCoursesCtrl , getTopicsCtrl , addTopicsCtrl , addTopicsCtrl, editTopicCtrl , setStatusCtrl};
+module.exports = { getTechnologyCtrl, getMyTrainingCtrl, traineesDashboardCtrl, completionPercentageCtrl , getCoursesCtrl ,addCoursesCtrl , getTopicsCtrl , addTopicsCtrl , addTopicsCtrl, editTopicCtrl , setStatusCtrl , uploadCtrl};
