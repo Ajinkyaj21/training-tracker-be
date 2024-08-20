@@ -1,4 +1,6 @@
 const {getTechnology, getMyTrainingQuery, traineesDashboardQuery, completionPercentageQuery, getCourses, addCourses , getTopics , addTopics , editTopics , topicExists ,courseExists,setStatus} = require('../models/technologiesModel');
+const { BlobServiceClient } = require('@azure/storage-blob');
+const fs = require('fs');
 const { sendSuccessRes, sendFailRes} = require('../utils/responses');
 // 4 .Get Technology Dropdown - Admin Page
 const getTechnologyCtrl = async(_, res) => {
@@ -43,7 +45,6 @@ const getTopicsCtrl =  async(req, res) => {
 try {
     const topic_id = req.params.topic_id;
     const results = await getTopics(topic_id);
-    console.log("The results are ---> ",results);
     if (!results.error) {
         return sendSuccessRes(res, {result: results});
     }
@@ -53,11 +54,11 @@ try {
     return sendFailRes(res, { message: "Internal Server Error" });
 }
 }
-
+const connectionString = process.env.AZURE_STORAGE_CONNECTION_STRING;
+const blobServiceClient = BlobServiceClient.fromConnectionString(connectionString);
 const addCoursesCtrl = async(req , res)=>{
     try {
     const userId = req.user.user_id;
-    console.log("The user id is --> ",userId);
     let { technology ,image ,description, is_admin: isAdmin } = req.body;   
     if (!(technology && image && description)) {
         return sendFailRes(res, { message: "All fields are necessary..." } );
@@ -74,24 +75,103 @@ const addCoursesCtrl = async(req , res)=>{
     }
 }
 
-const addTopicsCtrl = async(req , res)=>{
+// const addTopicsCtrl = async(req , res)=>{
+//     const tech_id = req.params.tech_id;
+//     const {topic , article , youtube , practice , assignments } = req.body;
+//     try{
+//     if(!(topic && tech_id)){
+//         return sendFailRes(res, { message: "All fields are necessary..." } );
+//     }
+//      app.post('/upload/image', upload.single('image'), async (req, res) => {
+//         try {
+//             const containerClient = blobServiceClient.getContainerClient(process.env.AZURE_STORAGE_CONTAINER_NAME); 
+   
+//             const imagePath = req.file.path;
+//             const blobName = req.file.originalname;
+//             const blockBlobClient = containerClient.getBlockBlobClient(blobName);
+
+//             await blockBlobClient.uploadFile(imagePath);
+
+//             fs.unlinkSync(imagePath);
+
+//             res.status(200).json({ message: 'Image uploaded successfully!', url: `https://${process.env.AZURE_STORAGE_ACCOUNT_NAME}.blob.core.windows.net/${process.env.AZURE_STORAGE_CONTAINER_NAME}/${blobName}` });
+//         } catch (error) {
+//             console.error('Error uploading image to Azure Blob Storage:', error);
+//             res.status(500).json({ error: 'Failed to upload image.' });
+//         }
+//     });
+//     const topicExistsCtrl = await topicExists(topic);
+//     if(topicExistsCtrl.length > 0){
+//         return sendFailRes(res, { message: "Topic already exists" }, 500);
+//     }
+//     const results = await addTopics(topic , article , youtube , practice , assignments , tech_id);
+//     return sendSuccessRes(res, {result: `Topic added successfully`});
+//     } catch (error) {
+//         console.error(error);
+//         return sendFailRes(res, { message: "Unable to insert topics" }, 500);
+//     }
+// }
+const addTopicsCtrl = async (req, res) => {
     const tech_id = req.params.tech_id;
-    const {topic , article , youtube , practice , assignments } = req.body;
-    try{
-    if(!(topic && tech_id)){
-        return sendFailRes(res, { message: "All fields are necessary..." } );
-    }
-    const topicExistsCtrl = await topicExists(topic);
-    if(topicExistsCtrl.length > 0){
-        return sendFailRes(res, { message: "Topic already exists" }, 500);
-    }
-    const results = await addTopics(topic , article , youtube , practice , assignments , tech_id);
-    return sendSuccessRes(res, {result: `Topic added successfully`});
+    const { topic, youtube, assignments } = req.body;
+    const { article, practice } = req.files || {}; 
+
+    try {
+        if (!(topic && tech_id)) {
+            return sendFailRes(res, { message: "All fields are necessary..." });
+        }
+
+        const containerClient = blobServiceClient.getContainerClient(process.env.AZURE_STORAGE_CONTAINER_NAME);
+
+        let articleUrl = null;
+        let practiceUrl = null;
+
+        // Upload article if present
+        if (article && article[0]) {
+            const articlePath = article[0].path;
+            const articleBlobName = article[0].filename; 
+            const articleBlockBlobClient = containerClient.getBlockBlobClient(articleBlobName);
+
+            await articleBlockBlobClient.uploadFile(articlePath);
+            fs.unlinkSync(articlePath);
+
+            articleUrl = `https://${process.env.AZURE_STORAGE_ACCOUNT_NAME}.blob.core.windows.net/${process.env.AZURE_STORAGE_CONTAINER_NAME}/${articleBlobName}`;
+        } else if (req.body.article) { 
+            articleUrl = req.body.article;
+        }
+
+        // Upload practice if present
+        if (practice && practice[0]) { 
+            const practicePath = practice[0].path;
+            const practiceBlobName = practice[0].filename;
+            const practiceBlockBlobClient = containerClient.getBlockBlobClient(practiceBlobName);
+
+            await practiceBlockBlobClient.uploadFile(practicePath);
+            fs.unlinkSync(practicePath);
+
+            practiceUrl = `https://${process.env.AZURE_STORAGE_ACCOUNT_NAME}.blob.core.windows.net/${process.env.AZURE_STORAGE_CONTAINER_NAME}/${practiceBlobName}`;
+        } else if (req.body.practice) { 
+            practiceUrl = req.body.practice;
+        }
+
+        const topicExistsCtrl = await topicExists(topic);
+        if (topicExistsCtrl.length > 0) {
+            return sendFailRes(res, { message: "Topic already exists" }, 500);
+        }
+        console.log("The data is ----> ",{topic, articleUrl, youtube, practiceUrl, assignments, tech_id});
+        const results = await addTopics(topic, articleUrl, youtube, practiceUrl, assignments, tech_id);
+
+        console.log("Topic added successfully: ", results);
+        return sendSuccessRes(res, { result: "Topic added successfully" });
     } catch (error) {
-        console.error(error);
+        console.error('Error in addTopicsCtrl:', error);
         return sendFailRes(res, { message: "Unable to insert topics" }, 500);
     }
-}
+};
+
+
+
+
 
 const setStatusCtrl = async(req , res)=>{
     try {
@@ -107,25 +187,61 @@ const setStatusCtrl = async(req , res)=>{
 }
 const editTopicCtrl = async (req, res) => {
     const tech_id = req.params.tech_id;
-    const { topic, article, youtube, practice, assignments, tech_topic_id } = req.body;
+    const { topic, youtube, assignments, tech_topic_id } = req.body;
+    const { article, practice } = req.files || {}; 
+    console.log("The data is ---> ",req.files)
     try {
         if (!tech_id || !tech_topic_id) {
             return sendFailRes(res, { message: "tech_id and tech_topic_id are necessary" });
         }
+
         if (!(topic || article || youtube || practice || assignments)) {
             return sendFailRes(res, { message: "At least one field to update must be provided..." });
         }
-        const topicExistsCtrl = await topicExists(topic);
-        if(topicExistsCtrl.length > 0){
-        return sendFailRes(res, { message: "Topic already exists" }, 500);
+
+        const containerClient = blobServiceClient.getContainerClient(process.env.AZURE_STORAGE_CONTAINER_NAME);
+
+        let articleUrl = null;
+        let practiceUrl = null;
+
+        // Upload article if present
+        if (article && article[0]) {
+            const articlePath = article[0].path;
+            const articleBlobName = article[0].filename;
+            const articleBlockBlobClient = containerClient.getBlockBlobClient(articleBlobName);
+
+            await articleBlockBlobClient.uploadFile(articlePath);
+            fs.unlinkSync(articlePath);
+
+            articleUrl = `https://${process.env.AZURE_STORAGE_ACCOUNT_NAME}.blob.core.windows.net/${process.env.AZURE_STORAGE_CONTAINER_NAME}/${articleBlobName}`;
+        } else if (req.body.article) { 
+            articleUrl = req.body.article;
         }
-        const results = await editTopics(topic, article, youtube, practice, assignments, tech_id, tech_topic_id);
+
+        // Upload practice if present
+        if (practice && practice[0]) { 
+            const practicePath = practice[0].path;
+            const practiceBlobName = practice[0].filename;
+            const practiceBlockBlobClient = containerClient.getBlockBlobClient(practiceBlobName);
+
+            await practiceBlockBlobClient.uploadFile(practicePath);
+            fs.unlinkSync(practicePath);
+
+            practiceUrl = `https://${process.env.AZURE_STORAGE_ACCOUNT_NAME}.blob.core.windows.net/${process.env.AZURE_STORAGE_CONTAINER_NAME}/${practiceBlobName}`;
+        } else if (req.body.practice) { 
+            practiceUrl = req.body.practice;
+        }
+        console.log("The edited data is ----> ",{topic, articleUrl, youtube, practiceUrl, assignments, tech_id, tech_topic_id});
+        const results = await editTopics(topic, articleUrl, youtube, practiceUrl, assignments, tech_id, tech_topic_id);
+
+        console.log("Topic updated successfully: ", results);
         return sendSuccessRes(res, { result: `Topic updated successfully` });
     } catch (error) {
-        console.error(error);
+        console.error('Error in editTopicCtrl:', error);
         return sendFailRes(res, { message: "Unable to update topics" }, 500);
     }
 };
+
 // Boxes with percentage for each box(eg.subject , all etc)
 const getMyTrainingCtrl = async (req, res) => {
     try {
