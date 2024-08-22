@@ -7,7 +7,7 @@ function sendSuccessRes(res, object, statusCode = 200, funcPath = '') {
         message: object.result,
         statusCode: statusCode
     }
-    infoLogger.info(logObject);
+    //infoLogger.info(logObject);
     return res.status(statusCode).send({success: true, failure: false, result: object.result, message: object.message || 'Success'});
 }
 
@@ -18,7 +18,7 @@ function sendFailRes(res, object, statusCode = 500, funcPath = '') {
         message: object.message,
         statusCode: statusCode
     }
-    errorLogger.error(logObject);
+    //errorLogger.error(logObject);
     return res.status(statusCode).send({success: false, failure: true, message: object.message});
 }
 
