@@ -1,19 +1,29 @@
+const path = require('path');
 const express = require("express");
+const multer = require('multer');
 const {getTechnologyCtrl, getMyTrainingCtrl, traineesDashboardCtrl, getCoursesCtrl, addCoursesCtrl , getTopicsCtrl, addTopicsCtrl , editTopicCtrl, setStatusCtrl ,uploadCtrl} = require("../controllers/technologiesController");
-
 
 const technologyRouter = express.Router();
 const { adminAuthMiddleware } = require("../middlewares/adminMiddleware");
 const { userAuthMiddleware } = require("../middlewares/userMiddleware");
-const multer = require('multer');
-const path = require('path');
+
+//const storage = multer.diskStorage({
+//    destination: (req, file, cb) => {
+//        cb(null, 'uploads/');
+//    },
+//    filename: (req, file, cb) => {
+//        cb(null, file.originalname);
+//    }
+//});
 
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
-        cb(null, 'uploads/'); 
+        // Correctly join __dirname with 'uploads' to specify the upload directory
+        cb(null, path.join( __dirname, 'uploads'));
     },
     filename: (req, file, cb) => {
-        cb(null, file.originalname); 
+        // Use the original file name for storage
+        cb(null, file.originalname);
     }
 });
 
