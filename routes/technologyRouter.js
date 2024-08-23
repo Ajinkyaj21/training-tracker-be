@@ -7,9 +7,12 @@ const technologyRouter = express.Router();
 const { adminAuthMiddleware } = require("../middlewares/adminMiddleware");
 const { userAuthMiddleware } = require("../middlewares/userMiddleware");
 
+
+
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
-        cb(null, 'uploads/');
+        const dir = path.join(__dirname, '..', 'uploads');
+        cb(null, dir);
     },
     filename: (req, file, cb) => {
         cb(null, file.originalname);
