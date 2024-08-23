@@ -7,38 +7,38 @@ const technologyRouter = express.Router();
 const { adminAuthMiddleware } = require("../middlewares/adminMiddleware");
 const { userAuthMiddleware } = require("../middlewares/userMiddleware");
 
-//const storage = multer.diskStorage({
-//    destination: (req, file, cb) => {
-//        cb(null, 'uploads/');
-//    },
-//    filename: (req, file, cb) => {
-//        cb(null, file.originalname);
-//    }
-//});
-
 const storage = multer.diskStorage({
-
     destination: (req, file, cb) => {
-
-        const dir = path.join(__dirname, '..', 'uploads');
-
-        if (!fs.existsSync(dir)){
-            fs.mkdirSync(dir, { recursive: true });
-        }
-
-        cb(null, dir);
-
+        cb(null, 'uploads/');
     },
-
     filename: (req, file, cb) => {
-
-        const uniqueSuffix = `${Date.now()}-${Math.round(Math.random() * 1E9)}`;
-
-        cb(null, file.originalname + '-' + uniqueSuffix);
-
+        cb(null, file.originalname);
     }
-
 });
+
+//const storage = multer.diskStorage({
+
+//    destination: (req, file, cb) => {
+
+//        const dir = path.join(__dirname, '..', 'uploads');
+
+//        if (!fs.existsSync(dir)){
+//            fs.mkdirSync(dir, { recursive: true });
+//        }
+
+//        cb(null, dir);
+
+//    },
+
+//    filename: (req, file, cb) => {
+
+//        const uniqueSuffix = `${Date.now()}-${Math.round(Math.random() * 1E9)}`;
+
+//        cb(null, file.originalname + '-' + uniqueSuffix);
+
+//    }
+
+//});
 
 
 const upload = multer({ storage: storage });
