@@ -1,7 +1,6 @@
 const path = require('path');
 const express = require("express");
 const multer = require('multer');
-const { MulterAzureStorage } = require('multer-azure-blob-storage');
 const {getTechnologyCtrl, getMyTrainingCtrl, traineesDashboardCtrl, getCoursesCtrl, addCoursesCtrl , getTopicsCtrl, addTopicsCtrl , editTopicCtrl, setStatusCtrl ,uploadCtrl} = require("../controllers/technologiesController");
 const technologyRouter = express.Router();
 const { adminAuthMiddleware } = require("../middlewares/adminMiddleware");
@@ -17,15 +16,14 @@ const { userAuthMiddleware } = require("../middlewares/userMiddleware");
 //        cb(null, file.originalname);
 //    }
 //});
-
-const storage = new MulterAzureStorage({
-  connectionString: process.env.AZURE_STORAGE_CONNECTION_STRING,
-  containerName: process.env.AZURE_STORAGE_CONTAINER_NAME,
-  containerAccessLevel: 'blob',
-  urlExpirationTime: 120,
-  fileName: (req, file) => file.originalname
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, './uploads');
+  },
+  filename: (req, file, cb) => {
+    cb(null, file.originalname);
+  }
 });
-
 
 const upload = multer({ storage: storage });
 
