@@ -19,7 +19,7 @@ function sendFailRes(res, object, statusCode = 500, funcPath = '') {
         statusCode: statusCode
     }
     //errorLogger.error(logObject);
-    return res.status(statusCode).send({success: false, failure: true, message: object.message});
+    return res.status(statusCode).send({success: false, failure: true, message: object.message, logObject: logObject});
 }
 
 module.exports = {
