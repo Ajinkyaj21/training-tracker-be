@@ -5,7 +5,6 @@ if (con) {
 		return new Promise((resolve, reject) => {
 			con.query(query, params, (error, result) => {
 			if (error) {
-				console.log('Database error', error.message);
 				reject(error);
 			} else {
 				resolve(result);

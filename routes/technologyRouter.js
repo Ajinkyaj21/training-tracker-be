@@ -9,7 +9,7 @@ const { userAuthMiddleware } = require("../middlewares/userMiddleware");
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
         const fs = require("fs"); // Or `import fs from "fs";` with ESM
-        const fileFolder = path.join(__dirname, '..', 'tmp');
+        const fileFolder = path.join(__dirname, '..', '..', '..', 'tmp');
         if (!fs.existsSync(fileFolder)) {
             fs.mkdirSync(fileFolder)
         }
