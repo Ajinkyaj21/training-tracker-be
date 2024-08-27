@@ -11,7 +11,9 @@ const dbCon = mysql.createConnection({
   password: CONFIG.DB_PASSWORD,
   database: CONFIG.DB_DATABASE,
   port: CONFIG.DB_PORT,
-  multipleStatements: true
+  multipleStatements: true,
+  keepAliveInitialDelay: 10000,
+  enableKeepAlive: true
 });
 
 dbCon.connect((err) => {
