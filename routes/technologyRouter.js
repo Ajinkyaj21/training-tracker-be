@@ -1,7 +1,7 @@
 const path = require('path');
 const express = require("express");
 const multer = require('multer');
-const {getTechnologyCtrl, getMyTrainingCtrl, traineesDashboardCtrl, getCoursesCtrl, addCoursesCtrl , getTopicsCtrl, addTopicsCtrl , editTopicCtrl, setStatusCtrl ,uploadCtrl , deleteTopicCtrl} = require("../controllers/technologiesController");
+const {getTechnologyCtrl, getMyTrainingCtrl, traineesDashboardCtrl, getCoursesCtrl, addCoursesCtrl , getTopicsCtrl, addTopicsCtrl , editTopicCtrl, setStatusCtrl ,uploadCtrl , deleteTopicCtrl , addSessionsCtrl , getSessionsCtrl} = require("../controllers/technologiesController");
 const technologyRouter = express.Router();
 const { adminAuthMiddleware } = require("../middlewares/adminMiddleware");
 const { userAuthMiddleware } = require("../middlewares/userMiddleware");
@@ -52,7 +52,6 @@ technologyRouter.put('/editTopic/:tech_id', adminAuthMiddleware,upload.fields([
 
 technologyRouter.delete('/deleteTopic/:topic_id', deleteTopicCtrl);
 
-
 technologyRouter.put('/uploadAssignment/:tech_id',upload.fields([
     { name: 'assignments', maxCount: 1 }]), uploadCtrl);
 
@@ -62,6 +61,10 @@ technologyRouter.put('/updateStatus/:topic_id', setStatusCtrl);
 technologyRouter.get('/myTraining', userAuthMiddleware, getMyTrainingCtrl);
 
 technologyRouter.get('/traineeDashboard', userAuthMiddleware, traineesDashboardCtrl);
+
+technologyRouter.post('/addSessions', adminAuthMiddleware, addSessionsCtrl);
+
+technologyRouter.get('/getSessions', getSessionsCtrl);
 
 
 module.exports = { technologyRouter };

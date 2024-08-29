@@ -1,4 +1,4 @@
-const {getTechnology, getMyTrainingQuery, traineesDashboardQuery, completionPercentageQuery, getCourses, addCourses , getTopics , addTopics , editTopics , topicExists ,courseExists,setStatus ,deleteTopic } = require('../models/technologiesModel');
+const {getTechnology, getMyTrainingQuery, traineesDashboardQuery, completionPercentageQuery, getCourses, addCourses , getTopics , addTopics , editTopics , topicExists ,courseExists,setStatus ,deleteTopic , addSessions , getSessions} = require('../models/technologiesModel');
 const { BlobServiceClient } = require('@azure/storage-blob');
 const fs = require('fs');
 const { sendSuccessRes, sendFailRes} = require('../utils/responses');
@@ -28,6 +28,7 @@ const deleteTopicCtrl = async(req, res) => {
         return sendFailRes(res, { message: "Internal Server Error" });
     }
 }
+
 const getCoursesCtrl = async(_, res) => {
     try {
         const results = await getCourses();
@@ -67,6 +68,19 @@ try {
     return sendFailRes(res, { message: "Internal Server Error" });
 }
 }
+
+const getSessionsCtrl =  async(req, res) => {
+    try {
+        const results = await getSessions();
+        if (!results.error) {
+            return sendSuccessRes(res, {result: results});
+        }
+        return sendFailRes(res, { message: results.errorMessage });
+    } catch (error) {
+        console.error("Error in get technology Ctrl..:", error);
+        return sendFailRes(res, { message: "Internal Server Error" });
+    }
+    }
 const connectionString = process.env.AZURE_STORAGE_CONNECTION_STRING;
 const blobServiceClient = BlobServiceClient.fromConnectionString(connectionString);
 const addCoursesCtrl = async(req , res)=>{
@@ -81,6 +95,24 @@ const addCoursesCtrl = async(req , res)=>{
         return sendFailRes(res, { message: "Course already exists" }, 500);
     }
     const results = await addCourses(technology , image , description , userId);
+    return sendSuccessRes(res, {result: `Course added successfully`});
+    } catch (error) {
+        console.error(error);
+        return sendFailRes(res, { message: "Unable to insert courses" }, 500);
+    }
+}
+
+
+const addSessionsCtrl = async(req , res)=>{
+    try {
+    const userId = req.user.user_id;
+    
+    let { sessionUrl ,name ,date, speaker , tagsJson } = req.body;   
+    if (!({ sessionUrl ,name ,date, speaker , tagsJson})) {
+        return sendFailRes(res, { message: "All fields are necessary..." } );
+    }    
+    const tags = JSON.stringify(tagsJson);
+    const results = await addSessions(sessionUrl ,name ,date, speaker , tags, userId);
     return sendSuccessRes(res, {result: `Course added successfully`});
     } catch (error) {
         console.error(error);
@@ -358,4 +390,4 @@ const completionPercentageCtrl = async(req, res) => {
 }
 
 
-module.exports = { getTechnologyCtrl, getMyTrainingCtrl, traineesDashboardCtrl, completionPercentageCtrl , getCoursesCtrl ,addCoursesCtrl , getTopicsCtrl , addTopicsCtrl , addTopicsCtrl, editTopicCtrl , setStatusCtrl , uploadCtrl , deleteTopicCtrl};
+module.exports = { getTechnologyCtrl, getMyTrainingCtrl, traineesDashboardCtrl, completionPercentageCtrl , getCoursesCtrl ,addCoursesCtrl , getTopicsCtrl , addTopicsCtrl , addTopicsCtrl, editTopicCtrl , setStatusCtrl , uploadCtrl , deleteTopicCtrl , addSessionsCtrl , getSessionsCtrl};

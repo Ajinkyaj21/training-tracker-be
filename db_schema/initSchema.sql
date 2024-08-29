@@ -153,3 +153,26 @@ ADD COLUMN status TEXT AFTER assignments;
 ALTER TABLE topics
 ADD COLUMN isDeleted TINYINT(1) DEFAULT 0 AFTER status;
 
+
+CREATE TABLE sessions (
+    session_id INT PRIMARY KEY AUTO_INCREMENT,
+    sessionUrl VARCHAR(255) NOT NULL,
+    name VARCHAR(255) NOT NULL,
+    date DATE,
+    speaker VARCHAR(255),
+    tags JSON,
+    user_id INT,
+    FOREIGN KEY (user_id) REFERENCES users(user_id)
+);
+
+CREATE TABLE sessions (
+    session_id INT PRIMARY KEY AUTO_INCREMENT,
+    sessionUrl VARCHAR(255) NOT NULL,
+    name VARCHAR(255) NOT NULL,
+    date DATE,
+    speaker VARCHAR(255),
+    tags JSON,
+    user_id INT,
+    FOREIGN KEY (user_id) REFERENCES users(user_id)
+);
+
