@@ -1,7 +1,7 @@
 const path = require('path');
 const express = require("express");
 const multer = require('multer');
-const {getTechnologyCtrl, getMyTrainingCtrl, traineesDashboardCtrl, getCoursesCtrl, addCoursesCtrl , getTopicsCtrl, addTopicsCtrl , editTopicCtrl, setStatusCtrl ,uploadCtrl} = require("../controllers/technologiesController");
+const {getTechnologyCtrl, getMyTrainingCtrl, traineesDashboardCtrl, getCoursesCtrl, addCoursesCtrl , getTopicsCtrl, addTopicsCtrl , editTopicCtrl, setStatusCtrl ,uploadCtrl , deleteTopicCtrl} = require("../controllers/technologiesController");
 const technologyRouter = express.Router();
 const { adminAuthMiddleware } = require("../middlewares/adminMiddleware");
 const { userAuthMiddleware } = require("../middlewares/userMiddleware");
@@ -49,6 +49,9 @@ technologyRouter.post('/addNewTopic/:tech_id', adminAuthMiddleware, upload.field
 technologyRouter.put('/editTopic/:tech_id', adminAuthMiddleware,upload.fields([
     { name: 'article', maxCount: 1 },
     { name: 'practice', maxCount: 1 }]), editTopicCtrl);
+
+technologyRouter.delete('/deleteTopic/:topic_id', deleteTopicCtrl);
+
 
 technologyRouter.put('/uploadAssignment/:tech_id',upload.fields([
     { name: 'assignments', maxCount: 1 }]), uploadCtrl);

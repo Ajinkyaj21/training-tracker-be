@@ -11,7 +11,12 @@ const getCourses = async() =>{
 }
 const getTopics = async(topic_id) =>{
     const query = `SELECT topic_id , topic , article , youtube , practice , assignments , status, DATE(created_at) AS created_at FROM topics 
-    WHERE  course_id = ?`
+    WHERE  course_id = ? AND isDeleted = 0`
+    const params = [topic_id]
+    return await executeQuery(query , params);
+}
+const deleteTopic = async(topic_id) =>{
+    const query = `UPDATE topics SET isDeleted = 1 WHERE topic_id = ? `
     const params = [topic_id]
     return await executeQuery(query , params);
 }
@@ -114,4 +119,4 @@ const traineesDashboardQuery = (params) => {
     return executeQuery(query, params);
 }
 
-module.exports = { getTechnology, getMyTrainingQuery, traineesDashboardQuery , getCourses , addCourses , getTopics , addTopics , editTopics, topicExists , courseExists , setStatus};
+module.exports = { getTechnology, getMyTrainingQuery, traineesDashboardQuery , getCourses , addCourses , getTopics , addTopics , editTopics, topicExists , courseExists , setStatus , deleteTopic};

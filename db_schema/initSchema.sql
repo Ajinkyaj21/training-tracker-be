@@ -149,3 +149,7 @@ CREATE TABLE topics (
 
 ALTER TABLE topics
 ADD COLUMN status TEXT AFTER assignments;
+
+ALTER TABLE topics
+ADD COLUMN isDeleted TINYINT(1) DEFAULT 0 AFTER status;
+

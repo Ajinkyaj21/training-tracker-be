@@ -1,4 +1,4 @@
-const {getTechnology, getMyTrainingQuery, traineesDashboardQuery, completionPercentageQuery, getCourses, addCourses , getTopics , addTopics , editTopics , topicExists ,courseExists,setStatus} = require('../models/technologiesModel');
+const {getTechnology, getMyTrainingQuery, traineesDashboardQuery, completionPercentageQuery, getCourses, addCourses , getTopics , addTopics , editTopics , topicExists ,courseExists,setStatus ,deleteTopic } = require('../models/technologiesModel');
 const { BlobServiceClient } = require('@azure/storage-blob');
 const fs = require('fs');
 const { sendSuccessRes, sendFailRes} = require('../utils/responses');
@@ -6,6 +6,19 @@ const { sendSuccessRes, sendFailRes} = require('../utils/responses');
 const getTechnologyCtrl = async(_, res) => {
     try {
         const results = await getTechnology();
+        if (!results.error) {
+            return sendSuccessRes(res, {result: results});
+        }
+        return sendFailRes(res, { message: results.errorMessage });
+    } catch (error) {
+        console.error("Error in get technology Ctrl..:", error);
+        return sendFailRes(res, { message: "Internal Server Error" });
+    }
+}
+const deleteTopicCtrl = async(req, res) => {
+    try {
+        const { topic_id } = req.params;
+        const results = await deleteTopic(topic_id);
         if (!results.error) {
             return sendSuccessRes(res, {result: results});
         }
@@ -345,4 +358,4 @@ const completionPercentageCtrl = async(req, res) => {
 }
 
 
-module.exports = { getTechnologyCtrl, getMyTrainingCtrl, traineesDashboardCtrl, completionPercentageCtrl , getCoursesCtrl ,addCoursesCtrl , getTopicsCtrl , addTopicsCtrl , addTopicsCtrl, editTopicCtrl , setStatusCtrl , uploadCtrl};
+module.exports = { getTechnologyCtrl, getMyTrainingCtrl, traineesDashboardCtrl, completionPercentageCtrl , getCoursesCtrl ,addCoursesCtrl , getTopicsCtrl , addTopicsCtrl , addTopicsCtrl, editTopicCtrl , setStatusCtrl , uploadCtrl , deleteTopicCtrl};
