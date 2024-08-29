@@ -4,7 +4,7 @@ const CONFIG = require('../utils/config');
 
 require('dotenv').config({ path: path.resolve('../.env') });
 
-const dbCon = mysql.createConnection({
+const dbCon = mysql.createPool({
   connectionLimit: 10,
   host: CONFIG.DB_HOST,
   user: CONFIG.DB_USER,
@@ -12,11 +12,11 @@ const dbCon = mysql.createConnection({
   database: CONFIG.DB_DATABASE,
   port: CONFIG.DB_PORT,
   multipleStatements: true,
-  keepAliveInitialDelay: 10000,
+  //keepAliveInitialDelay: 10000,
   enableKeepAlive: true
 });
 
-dbCon.connect((err) => {
+dbCon.getConnection((err) => {
   if (err) {
     console.error('Error connecting to MySQL:', err);
     return;
